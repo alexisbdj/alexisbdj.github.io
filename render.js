@@ -1,3 +1,13 @@
+const Cyan = '(0, 255, 255)';
+const Yellow = '(255, 255, 0)';
+const Magenta = '(150, 0, 150)';
+const Green = '(0, 255, 0)';
+const Blue = '(0, 0, 255)';
+const Red = '(255, 0, 0';
+const Orange = '(255, 165, 0)';
+
+let colors = [Red, Green, Yellow, Magenta, Cyan, Blue, Orange];
+
 function clear(context, canvas) {
     context.save();
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -36,7 +46,7 @@ function drawCurrent(context, Game, xSize, ySize) {
         for (let y = 0; y < 4; y++) {
             if (Game.current.mat[x][y] != 0) {
                 let pos = {x: xSize * (x + Game.current.pos.x), y: ySize * (y + Game.current.pos.y)};
-                context.fillStyle = "rgb(0, 0, 255)";
+                context.fillStyle = "rgb" + colors[Game.current.mat[x][y] - 1];
                 context.fillRect(pos.x, pos.y, xSize, ySize);
                 context.restore();
             }
@@ -54,7 +64,7 @@ function drawBoard(context, canvas, Game) {
         for (let y = 0; y < Game.boardSize.y; y++) {
             if (Game.board[x][y] != 0) {
                 let pos = {x: xSize * x, y: ySize * y};
-                context.fillStyle = "rgb(0, 0, 255)";
+                context.fillStyle = "rgb" + colors[Game.board[x][y] - 1];
                 context.fillRect(pos.x, pos.y, xSize, ySize);
                 context.restore();
             }
