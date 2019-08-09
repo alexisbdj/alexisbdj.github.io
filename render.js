@@ -14,27 +14,27 @@ function clear(context, canvas) {
     context.restore();
 }
 
-function drawBackground(context, canvas) {
-    const xShift = canvas.width / 10;
-    const yShift = canvas.height / 20;
+function drawBackground(context, Game) {
+    const xShift = Game.rect.width / 10;
+    const yShift = Game.rect.height / 20;
 
     context.save();
     context.fillStyle = "rgb(50, 50, 50)";
-    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillRect(Game.rect.left, Game.rect.top, Game.rect.width, Game.rect.height);
     context.restore();
     for (let i = 0; i < 9; i++) {
-        let xPos = (xShift * (i + 1));
+        let xPos = Game.rect.left + (xShift * (i + 1));
         context.beginPath();
         context.moveTo(xPos, 0);
-        context.lineTo(xPos, canvas.height);
+        context.lineTo(xPos, Game.rect.height + Game.rect.top);
         context.stroke();
         context.restore();
     }
     for (let i = 0; i < 19; i++) {
-        let yPos = (yShift * (i + 1));
+        let yPos = Game.rect.top + (yShift * (i + 1));
         context.beginPath();
         context.moveTo(0, yPos);
-        context.lineTo(canvas.width, yPos);
+        context.lineTo(Game.rect.width + Game.rect.left, yPos);
         context.stroke();
         context.restore();
     }
@@ -45,7 +45,7 @@ function drawCurrent(context, Game, xSize, ySize) {
     for (let x = 0; x < 4; x++) {
         for (let y = 0; y < 4; y++) {
             if (Game.current.mat[x][y] != 0) {
-                let pos = {x: xSize * (x + Game.current.pos.x), y: ySize * (y + Game.current.pos.y)};
+                let pos = {x: Game.rect.left + xSize * (x + Game.current.pos.x), y: Game.rect.top + ySize * (y + Game.current.pos.y)};
                 context.fillStyle = "rgb" + colors[Game.current.mat[x][y] - 1];
                 context.fillRect(pos.x, pos.y, xSize, ySize);
                 context.restore();
@@ -54,29 +54,44 @@ function drawCurrent(context, Game, xSize, ySize) {
     }
 }
 
-function drawBoard(context, canvas, Game) {
-    const xSize = canvas.width / 10;
-    const ySize = canvas.height / 20;
+function drawBoard(context, Game) {
+    const xSize = Game.rect.width / 10;
+    const ySize = Game.rect.height / 20;
 
 
     context.save();
     for (let x = 0; x < Game.boardSize.x; x++) {
         for (let y = 0; y < Game.boardSize.y; y++) {
             if (Game.board[x][y] != 0) {
-                let pos = {x: xSize * x, y: ySize * y};
+                let pos = {x: Game.rect.left + xSize * x, y: Game.rect.top + ySize * y};
                 context.fillStyle = "rgb" + colors[Game.board[x][y] - 1];
                 context.fillRect(pos.x, pos.y, xSize, ySize);
                 context.restore();
             }
         }
     }
-    drawCurrent(context, Game, xSize, ySize);
+    if (Game.current != undefined)
+        drawCurrent(context, Game, xSize, ySize);
+}
+
+function drawMessage(context, Game, message)
+{
+    context.save();
+    context.font = '100px serif';
+    context.fillStyle = 'rgb(255, 255, 255)';
+    context.fillText(message, Game.rect.left + 90, Game.rect.top + Game.rect.height / 2);
+    context.fillStyle = 'rgb(0, 0, 0)';
+    context.lineWidth = 2;
+    context.strokeText(message, Game.rect.left + 90, Game.rect.top + Game.rect.height / 2);
+    context.restore();
 }
 
 function render(canvas, context, Game) {
     clear(context, canvas);
-    drawBackground(context, canvas);
-    drawBoard(context, canvas, Game);
+    drawBackground(context, Game);
+    drawBoard(context, Game);
+    if (Game.status == statusCodes.lost)
+        drawMessage(context, Game, 't nul');
     requestAnimationFrame(() => {
     });
 }

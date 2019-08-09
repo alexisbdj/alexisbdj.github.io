@@ -1,15 +1,23 @@
 const canvas = document.getElementById('window');
 let context;
 
+var statusCodes = {
+    playing: 0,
+    lost: 1,
+}
+
 let Game = {
-    pos: {x: 0, y: 0},
     tileSize: 40,
     keys: {left: false, right: false},
     boardSize: {x: 10, y: 20},
     board: [],
     current: {},
     timeLeftToFall: 1,
-    movementsToDo: {left: 0, right: 0, rleft: 0, rright: 0}
+    movementsToDo: {left: 0, right: 0, rleft: 0, rright: 0, harddrop: false, softdrop: false},
+    status: statusCodes.playing,
+    lockDelay: 0.5,
+    next: [],
+    rect: {left: 0, top: canvas.height*0.2, width: canvas.width*0.8, height: canvas.height*0.8},
 };
 
 let tetrList = ['z', 's', 'o', 't', 'i', 'j', 'l'];
@@ -239,6 +247,13 @@ function keysUpdate(key, value) {
         else if (key == 'x') {
             Game.movementsToDo.rright++;
         }
+        else if (key == ' ') {
+            Game.movementsToDo.harddrop = true;
+        }
+    }
+    if (key == 'ArrowDown') {
+        Game.movementsToDo.softdrop = value;
+        console.log(Game.movementsToDo.softdrop)
     }
 }
 
@@ -250,10 +265,6 @@ function initBoard() {
         }
         Game.board.push(row);
     }
-/*    for (let i = 0; i < Game.boardSize.x && i < Game.boardSize.y; i++) {
-        Game.board[i][i] = 1;
-    }
-    */
 }
 
 function setCurrentToStat(tetri, stat) {
@@ -274,6 +285,17 @@ function initCurrent(tetri) {
         Game.current.mat.push(row);
     }
     setCurrentToStat(tetri, Game.current.nstat);
+    for (let x = 0; x < 4; x++) {
+        for (let y = 0; y < 4; y++) {
+            if (Game.current.mat[x][y] != 0) {
+                if (!isEmpty(Game, x + Game.current.pos.x, y + Game.current.pos.y)) {
+                    Game.current = undefined;
+                    Game.status = statusCodes.lost;
+                    return;
+                }
+            }
+        }
+    }
 }
 
 function init() {
@@ -281,40 +303,27 @@ function init() {
     initRandomizer(tetrList);
     initCurrent(getTetri());
     document.addEventListener('keydown', (event) => {
+        if (event.code == 'ArrowDown' || event.code == 'ArrowUp' || event.code == 'Space')
+            event.preventDefault();
         keysUpdate(event.key, true);
     });
     document.addEventListener('keyup', (event) => {
+        if (event.code == 'ArrowDown' || event.code == 'ArrowUp' || event.code == 'Space')
+            event.preventDefault();
         keysUpdate(event.key, false);
+        console.log(event.key);
     });
 }
 
+
 function update() {
-    Game.timeLeftToFall -= deltaTime;
-    for (let i = 0; i < Game.movementsToDo.left; i++)
-        move(Game, -1, 0);
-    for (let i = 0; i < Game.movementsToDo.right; i++)
-        move(Game, 1, 0);
-    for (let i = 0; i < Game.movementsToDo.rleft; i++)
-        rotate(Game, -1);
-    for (let i = 0; i < Game.movementsToDo.rright; i++)
-        rotate(Game, 1);
+    if (Game.status == statusCodes.playing)
+        tetrisTick(Game, deltaTime);
 
     Game.movementsToDo.left = 0;
     Game.movementsToDo.right = 0;
     Game.movementsToDo.rleft = 0;
     Game.movementsToDo.rright = 0;
-    if (Game.timeLeftToFall < 0) {
-        Game.timeLeftToFall += 1.0;
-        if (!move(Game, 0, 1)) {
-            lockCurrent(Game);
-        }
-    }
-    if (Game.keys.left) {
-        Game.pos.x -= 40 * deltaTime;
-    }
-    if (Game.keys.right) {
-        Game.pos.x += 40 * deltaTime;
-    }
 }
 
 function mainLoop() {

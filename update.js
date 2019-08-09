@@ -9,6 +9,8 @@ function isEmpty(Game, x, y) {
 }
 
 function move(Game, xMov, yMov) {
+    if (Game.current == undefined)
+        return;
     for (let x = 0; x < 4; x++) {
         for (let y = 0; y < 4; y++) {
             if (Game.current.mat[x][y] != 0) {
@@ -21,6 +23,43 @@ function move(Game, xMov, yMov) {
     Game.current.pos.x += xMov;
     Game.current.pos.y += yMov;
     return true;
+}
+
+function tetrisTick(Game, deltaTime) {
+    let mv = deltaTime;
+    if (Game.movementsToDo.softdrop)
+        mv *= 5;
+    Game.timeLeftToFall -= mv;
+    for (let i = 0; i < Game.movementsToDo.left; i++)
+        move(Game, -1, 0);
+    for (let i = 0; i < Game.movementsToDo.right; i++)
+        move(Game, 1, 0);
+    for (let i = 0; i < Game.movementsToDo.rleft; i++)
+        rotate(Game, -1);
+    for (let i = 0; i < Game.movementsToDo.rright; i++)
+        rotate(Game, 1);
+    if (Game.movementsToDo.harddrop) {
+        while (move(Game, 0, 1));
+        lockCurrent(Game);
+        Game.timeLeftToFall = 1.0;
+        Game.movementsToDo.harddrop = false;
+    }
+    else {
+        if (Game.timeLeftToFall < 0) {
+            Game.timeLeftToFall += 1.0;
+            if (!move(Game, 0, 1)) {
+                Game.lockDelay -= deltaTime;
+                if (Game.lockDelay <= 0)
+                    lockCurrent(Game);
+            }
+            else {
+                Game.lockDelay = 0.5;
+            }
+        }
+        else if (Game.lockDelay < 0.5) {
+            Game.lockDelay -= 0.5;
+        }
+    }
 }
 
 function lockCurrent(Game)
@@ -37,6 +76,8 @@ function lockCurrent(Game)
 }
 
 function rotate(Game, direction) {
+    if (Game.current == undefined)
+        return;
     let baseStat = Game.current.nstat;
     Game.current.nstat += direction;
     while (Game.current.nstat < 0) {
