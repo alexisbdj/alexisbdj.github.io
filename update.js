@@ -11,8 +11,8 @@ function isEmpty(Game, x, y) {
 function move(Game, xMov, yMov) {
     if (Game.current == undefined)
         return;
-    for (let x = 0; x < 4; x++) {
-        for (let y = 0; y < 4; y++) {
+    for (let x = 0; x < 5; x++) {
+        for (let y = 0; y < 5; y++) {
             if (Game.current.mat[x][y] != 0) {
                 if (!isEmpty(Game, x + Game.current.pos.x + xMov, y + Game.current.pos.y + yMov)) {
                     return false;
@@ -63,14 +63,17 @@ function tetrisTick(Game, deltaTime) {
         lockCurrent(Game);
         Game.timeLeftToFall = 1.0;
         Game.movementsToDo.harddrop = false;
+        Game.lockDelay = 0.5;
     }
     else {
         if (Game.timeLeftToFall < 0) {
             Game.timeLeftToFall += 1.0;
             if (!move(Game, 0, 1)) {
                 Game.lockDelay -= deltaTime;
-                if (Game.lockDelay <= 0)
+                if (Game.lockDelay <= 0) {
                     lockCurrent(Game);
+                    Game.lockDelay = 0.5;
+                }
             }
             else {
                 Game.lockDelay = 0.5;
@@ -84,8 +87,8 @@ function tetrisTick(Game, deltaTime) {
 
 function lockCurrent(Game)
 {
-    for (let x = 0; x < 4; x++) {
-        for (let y = 0; y < 4; y++) {
+    for (let x = 0; x < 5; x++) {
+        for (let y = 0; y < 5; y++) {
             if (Game.current.mat[x][y] != 0) {
                 Game.board[x + Game.current.pos.x][y + Game.current.pos.y] = Game.current.mat[x][y];
             }
@@ -99,8 +102,7 @@ function rotate(Game, direction) {
     if (Game.current == undefined)
         return;
     let baseStat = Game.current.nstat;
-//    let basePos = {x: Game.current.pos.x, y: Game.current.pos.y};
-//    let wallKickTab;
+    let wallKickTab;
     Game.current.nstat += direction;
     while (Game.current.nstat < 0) {
         Game.current.nstat += 4;
@@ -109,14 +111,32 @@ function rotate(Game, direction) {
         Game.current.nstat -= 4;
     }
     setCurrentToStat(Game.current.tetri, Game.current.nstat);
-/*
-    for (let t = 0; t < 5; t++) {
-//        let translation = {x: }
+    if (Game.current.tetri == 'i') {
+        wallKickTab = iTetriWallKickTab;
     }
-*/
+    else {
+        wallKickTab = normalWallKickTab;
+    }
+
+    for (let t = 0; t < 5; t++) {
+        let translation = {
+            x: wallKickTab[baseStat][t].x - wallKickTab[Game.current.nstat][t].x,
+            y: (wallKickTab[baseStat][t].y * -1) - (wallKickTab[Game.current.nstat][t].y * -1)
+        };
+        console.log(t, ': translation: ', translation);
+        if (move(Game, translation.x, translation.y)) {
+            console.log('rotation: ', t);
+            return;
+        }
+        console.log('missed');
+    }
+    Game.current.nstat = baseStat;
+    console.log('stat: ',Game.current.nstat)
+    setCurrentToStat(Game.current.tetri, Game.current.nstat);
+    console.log('rotation failed.');
 
 
-    for (let x = 0; x < 4; x++) {
+/*    for (let x = 0; x < 4; x++) {
         for (let y = 0; y < 4; y++) {
             if (Game.current.mat[x][y] != 0) {
                 if (!isEmpty(Game, x + Game.current.pos.x, y + Game.current.pos.y)) {
@@ -127,7 +147,7 @@ function rotate(Game, direction) {
             }
         }
     }
-
+*/
 }
 
 function singleClear(Game, line) {

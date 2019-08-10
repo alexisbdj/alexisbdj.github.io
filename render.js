@@ -44,10 +44,13 @@ function drawTetri(context, gpos, xSize, ySize, tetri)
 {
     let stat = tetriminos[tetri].stats[0];
     context.save();
-    for (let x = 0; x < 4; x++) {
-        for (let y = 0; y < 4; y++) {
+    for (let x = 0; x < 5; x++) {
+        for (let y = 0; y < 5; y++) {
             if (stat[y][x] != 0) {
                 let pos = {x: gpos.x + xSize * x, y: gpos.y + ySize * y};
+                if (tetri == 'i' || tetri == 'o') {
+                    pos.x -= xSize;
+                }
                 context.fillStyle = "rgb" + colors[stat[y][x] - 1];
                 context.fillRect(pos.x, pos.y, xSize, ySize);
                 context.restore();
@@ -58,8 +61,8 @@ function drawTetri(context, gpos, xSize, ySize, tetri)
 
 function drawCurrent(context, Game, xSize, ySize) {
     context.save();
-    for (let x = 0; x < 4; x++) {
-        for (let y = 0; y < 4; y++) {
+    for (let x = 0; x < 5; x++) {
+        for (let y = 0; y < 5; y++) {
             if (Game.current.mat[x][y] != 0) {
                 let pos = {x: Game.rect.left + xSize * (x + Game.current.pos.x), y: Game.rect.top + ySize * (y + Game.current.pos.y)};
                 context.fillStyle = "rgb" + colors[Game.current.mat[x][y] - 1];
