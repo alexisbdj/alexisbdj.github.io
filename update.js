@@ -1,7 +1,9 @@
 function isEmpty(Game, x, y) {
-    if (x < 0 || x >= Game.boardSize.x || y < 0 || y >= Game.boardSize.y) {
+    if (x < 0 || x >= Game.boardSize.x || y >= Game.boardSize.y) {
         return false;
     }
+    if (y < 0)
+        return true;
     if (Game.board[x][y] != 0) {
         return false;
     }
@@ -66,8 +68,10 @@ function tetrisTick(Game, deltaTime) {
         Game.lockDelay = 0.5;
     }
     else {
+        let k = 0;
         if (Game.timeLeftToFall < 0) {
             Game.timeLeftToFall += 1.0;
+            Game.timeLeftToFall
             if (!move(Game, 0, 1)) {
                 Game.lockDelay -= deltaTime;
                 if (Game.lockDelay <= 0) {
@@ -77,11 +81,15 @@ function tetrisTick(Game, deltaTime) {
             }
             else {
                 Game.lockDelay = 0.5;
+                k++;
             }
         }
         else if (Game.lockDelay < 0.5) {
-            Game.lockDelay -= 0.5;
+            Game.lockDelay -= deltaTime;
+            k++;
         }
+        if (k == 2)
+        console.log('f');
     }
 }
 
@@ -126,6 +134,7 @@ function rotate(Game, direction) {
         console.log(t, ': translation: ', translation);
         if (move(Game, translation.x, translation.y)) {
             console.log('rotation: ', t);
+            Game.lockDelay = 0.5;
             return;
         }
         console.log('missed');

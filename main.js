@@ -18,7 +18,9 @@ let Game = {
     lockDelay: 0.5,
     next: [],
     hold: undefined,
-    rect: {left: 0, top: canvas.height*0.2, width: canvas.width*0.8, height: canvas.height*0.8},
+    rect: {left: 128, top: 0, width: 320, height: 640},
+    nextPos: {x: 0, y: 0},
+    holdPos: {x: 0, y: 0},
 };
 let tetrList = ['z', 's', 'o', 't', 'i', 'j', 'l'];
 
@@ -288,6 +290,9 @@ function keysUpdate(key, value) {
             Game.board = JSON.parse(localStorage.getItem('board'));
             console.log('ok');
         }
+        else if (key == 'F4') {
+            restart(Game);
+        }
     }
     if (key == 'ArrowDown') {
         Game.movementsToDo.softdrop = value;
@@ -295,6 +300,7 @@ function keysUpdate(key, value) {
 }
 
 function initBoard() {
+    Game.board = [];
     for (let j = 0; j < Game.boardSize.x; j++) {
         let row = [];
         for (let i = 0; i < Game.boardSize.y; i++) {
@@ -302,6 +308,19 @@ function initBoard() {
         }
         Game.board.push(row);
     }
+}
+
+function initNextHoldPosRelativeToBoard(Game) {
+    Game.nextPos = {x: Game.rect.left + Game.rect.width, y: Game.rect.top};
+    Game.holdPos = {x: Game.rect.left - (Game.rect.width / Game.boardSize.x) * 4, y: Game.rect.top};
+}
+
+function restart(Game) {
+    initBoard();
+    initRandomizer(tetrList);
+    Game.next = [];
+    Game.hold = undefined;
+    getNextTetri(Game);
 }
 
 function setCurrentToStat(tetri, stat) {
@@ -342,6 +361,7 @@ function initCurrent(tetri) {
 function init() {
     initBoard();
     initRandomizer(tetrList);
+    initNextHoldPosRelativeToBoard(Game);
     getNextTetri(Game);
     document.addEventListener('keydown', (event) => {
         if (event.code == 'ArrowDown' || event.code == 'ArrowUp' || event.code == 'Space')
