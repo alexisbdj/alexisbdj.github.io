@@ -40,6 +40,22 @@ function drawBackground(context, Game) {
     }
 }
 
+function drawTetri(context, gpos, xSize, ySize, tetri)
+{
+    let stat = tetriminos[tetri].stats[0];
+    context.save();
+    for (let x = 0; x < 4; x++) {
+        for (let y = 0; y < 4; y++) {
+            if (stat[y][x] != 0) {
+                let pos = {x: gpos.x + xSize * x, y: gpos.y + ySize * y};
+                context.fillStyle = "rgb" + colors[stat[y][x] - 1];
+                context.fillRect(pos.x, pos.y, xSize, ySize);
+                context.restore();
+            }
+        }
+    }
+}
+
 function drawCurrent(context, Game, xSize, ySize) {
     context.save();
     for (let x = 0; x < 4; x++) {
@@ -86,12 +102,29 @@ function drawMessage(context, Game, message)
     context.restore();
 }
 
+function drawNext(context, Game) {
+    const basePos = {x: Game.rect.left + Game.rect.width, y: Game.rect.top};
+    const sizeX = 20;
+    const sizeY = 20;
+    for (let i = 0; i < Game.next.length; i++) {
+        drawTetri(context, {x: basePos.x, y: basePos.y + sizeY * 4 * i}, sizeX, sizeY, Game.next[i]);
+    }
+}
+
+function drawHold(context, Game) {
+    if (Game.hold != undefined) {
+        drawTetri(context, {x: 0, y: 0}, 20, 20, Game.hold);
+    }
+}
+
 function render(canvas, context, Game) {
     clear(context, canvas);
     drawBackground(context, Game);
     drawBoard(context, Game);
     if (Game.status == statusCodes.lost)
         drawMessage(context, Game, 't nul');
+    drawNext(context, Game);
+    drawHold(context, Game);
     requestAnimationFrame(() => {
     });
 }

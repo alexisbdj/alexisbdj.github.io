@@ -13,10 +13,11 @@ let Game = {
     board: [],
     current: {},
     timeLeftToFall: 1,
-    movementsToDo: {left: 0, right: 0, rleft: 0, rright: 0, harddrop: false, softdrop: false},
+    movementsToDo: {left: 0, right: 0, rleft: 0, rright: 0, harddrop: false, softdrop: false, hold: false},
     status: statusCodes.playing,
     lockDelay: 0.5,
     next: [],
+    hold: undefined,
     rect: {left: 0, top: canvas.height*0.2, width: canvas.width*0.8, height: canvas.height*0.8},
 };
 
@@ -250,10 +251,12 @@ function keysUpdate(key, value) {
         else if (key == ' ') {
             Game.movementsToDo.harddrop = true;
         }
+        else if (key == 'c') {
+            Game.movementsToDo.hold = true;
+        }
     }
     if (key == 'ArrowDown') {
         Game.movementsToDo.softdrop = value;
-        console.log(Game.movementsToDo.softdrop)
     }
 }
 
@@ -301,7 +304,7 @@ function initCurrent(tetri) {
 function init() {
     initBoard();
     initRandomizer(tetrList);
-    initCurrent(getTetri());
+    getNextTetri(Game);
     document.addEventListener('keydown', (event) => {
         if (event.code == 'ArrowDown' || event.code == 'ArrowUp' || event.code == 'Space')
             event.preventDefault();
@@ -311,7 +314,6 @@ function init() {
         if (event.code == 'ArrowDown' || event.code == 'ArrowUp' || event.code == 'Space')
             event.preventDefault();
         keysUpdate(event.key, false);
-        console.log(event.key);
     });
 }
 

@@ -25,6 +25,13 @@ function move(Game, xMov, yMov) {
     return true;
 }
 
+function getNextTetri(Game) {
+    while (Game.next.length < 5) {
+        Game.next.push(getTetri());
+    }
+    initCurrent(Game.next.shift());
+}
+
 function tetrisTick(Game, deltaTime) {
     let mv = deltaTime;
     if (Game.movementsToDo.softdrop)
@@ -38,6 +45,19 @@ function tetrisTick(Game, deltaTime) {
         rotate(Game, -1);
     for (let i = 0; i < Game.movementsToDo.rright; i++)
         rotate(Game, 1);
+
+    if (Game.movementsToDo.hold) {
+        if (Game.hold == undefined) {
+            Game.hold = Game.current.tetri;
+            getNextTetri(Game);
+        }
+        else {
+            let oldHold = Game.hold;
+            Game.hold = Game.current.tetri;
+            initCurrent(oldHold);
+        }
+        Game.movementsToDo.hold = false;
+    }
     if (Game.movementsToDo.harddrop) {
         while (move(Game, 0, 1));
         lockCurrent(Game);
@@ -72,13 +92,15 @@ function lockCurrent(Game)
         }
     }
     clearLines(Game);
-    initCurrent(getTetri());
+    getNextTetri(Game);
 }
 
 function rotate(Game, direction) {
     if (Game.current == undefined)
         return;
     let baseStat = Game.current.nstat;
+//    let basePos = {x: Game.current.pos.x, y: Game.current.pos.y};
+//    let wallKickTab;
     Game.current.nstat += direction;
     while (Game.current.nstat < 0) {
         Game.current.nstat += 4;
@@ -87,6 +109,12 @@ function rotate(Game, direction) {
         Game.current.nstat -= 4;
     }
     setCurrentToStat(Game.current.tetri, Game.current.nstat);
+/*
+    for (let t = 0; t < 5; t++) {
+//        let translation = {x: }
+    }
+*/
+
 
     for (let x = 0; x < 4; x++) {
         for (let y = 0; y < 4; y++) {
@@ -129,3 +157,96 @@ function clearLines(Game) {
         }
     }
 }
+
+let normalWallKickTab = [
+    [   // stat 0
+        {x: 0, y: 0},   //offset 0-1
+        {x: 0, y: 0},   //offset 0-2
+        {x: 0, y: 0},   //offset 0-3
+        {x: 0, y: 0},   //offset 0-4
+        {x: 0, y: 0},   //offset 0-5
+    ],
+    [   //stat 1 (R)
+        {x: 0, y: 0},   //offset 1-1
+        {x: 1, y: 0},   //offset 1-2
+        {x: 1, y: -1},   //offset 1-3
+        {x: 0, y: 2},   //offset 1-4
+        {x: 1, y: 2},   //offset 1-5
+    ],
+    [   //stat 2
+        {x: 0, y: 0},   //offset 2-1
+        {x: 0, y: 0},   //offset 2-2
+        {x: 0, y: 0},   //offset 2-3
+        {x: 0, y: 0},   //offset 2-4
+        {x: 0, y: 0},   //offset 2-5
+    ],
+    [   //stat 3 (L)
+        {x: 0, y: 0},   //offset 3-1
+        {x: -1, y: 0},   //offset 3-2
+        {x: -1, y: -1},   //offset 3-3
+        {x: 0, y: 2},   //offset 3-4
+        {x: -1, y: 2},   //offset 3-5
+    ],
+]
+
+let iTetriWallKickTab = [
+    [   // stat 0
+        {x: 0, y: 0},   //offset 0-1
+        {x: -1, y: 0},   //offset 0-2
+        {x: 2, y: 0},   //offset 0-3
+        {x: -1, y: 0},   //offset 0-4
+        {x: 2, y: 0},   //offset 0-5
+    ],
+    [   //stat 1 (R)
+        {x: -1, y: 0},   //offset 1-1
+        {x: 0, y: 0},   //offset 1-2
+        {x: 0, y: 0},   //offset 1-3
+        {x: 0, y: 1},   //offset 1-4
+        {x: 0, y: -2},   //offset 1-5
+    ],
+    [   //stat 2
+        {x: -1, y: 1},   //offset 2-1
+        {x: 1, y: 1},   //offset 2-2
+        {x: -2, y: 1},   //offset 2-3
+        {x: 1, y: 0},   //offset 2-4
+        {x: -2, y: 0},   //offset 2-5
+    ],
+    [   //stat 3 (L)
+        {x: 0, y: 1},   //offset 3-1
+        {x: 0, y: 1},   //offset 3-2
+        {x: 0, y: 1},   //offset 3-3
+        {x: 0, y: -1},   //offset 3-4
+        {x: 0, y: 2},   //offset 3-5
+    ],
+]
+
+let oTetriWallKickTab = [
+    [   // stat 0
+        {x: 0, y: 0},   //offset 0-1
+        {x: 0, y: 0},   //offset 0-2
+        {x: 0, y: 0},   //offset 0-3
+        {x: 0, y: 0},   //offset 0-4
+        {x: 0, y: 0},   //offset 0-5
+    ],
+    [   //stat 1 (R)
+        {x: 0, y: -1},  //offset 1-1
+        {x: 0, y: -1},  //offset 1-2
+        {x: 0, y: -1},  //offset 1-3
+        {x: 0, y: -1},  //offset 1-4
+        {x: 0, y: -1},  //offset 1-5
+    ],
+    [   //stat 2
+        {x: -1, y: -1},   //offset 2-1
+        {x: -1, y: -1},   //offset 2-2
+        {x: -1, y: -1},   //offset 2-3
+        {x: -1, y: -1},   //offset 2-4
+        {x: -1, y: -1},   //offset 2-5
+    ],
+    [   //stat 3 (L)
+        {x: -1, y: 0},   //offset 3-1
+        {x: -1, y: 0},   //offset 3-2
+        {x: -1, y: 0},   //offset 3-3
+        {x: -1, y: 0},   //offset 3-4
+        {x: -1, y: 0},   //offset 3-5
+    ],
+]
