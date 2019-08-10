@@ -1,10 +1,10 @@
-const Cyan = '(0, 255, 255)';
-const Yellow = '(255, 255, 0)';
-const Magenta = '(150, 0, 150)';
-const Green = '(0, 255, 0)';
-const Blue = '(0, 0, 255)';
-const Red = '(255, 0, 0';
-const Orange = '(255, 165, 0)';
+const Cyan = '(0, 255, 255, 0.8)';
+const Yellow = '(255, 255, 0, 0.8)';
+const Magenta = '(150, 0, 150, 0.8)';
+const Green = '(0, 255, 0, 0.8)';
+const Blue = '(0, 0, 255, 0.8)';
+const Red = '(255, 0, 0, 0.8)';
+const Orange = '(255, 165, 0, 0.8)';
 
 let colors = [Red, Green, Yellow, Magenta, Cyan, Blue, Orange];
 
