@@ -1,0 +1,50 @@
+{
+    "changelogs": [
+        {
+            "version": "beta 1.0",
+            "date": "Aug 8, 2019",
+            "changes": [
+                "added a boring game"
+            ]
+        },
+        {
+            "version": "beta 1.1",
+            "date": "Aug 8, 2019",
+            "changes": [
+                "removed the red square from the game, it was too hard to balance",
+                "tetris rules",
+                "fill a horizontal line to clear it",
+                "using 7 bag random generator"
+            ]
+        },
+        {
+            "version": "beta 1.2",
+            "date": "Aug 9, 20",
+            "changes": [
+                "added rotations"
+            ]
+        },
+        {
+            "version": "beta 1.3",
+            "date": "Aug 10, 20",
+            "changes": [
+                "added harddrop and softdrop",
+                "added lockdelay",
+                "added defeat",
+                "added hold/next",
+                "added SRS rotation wallkicks",
+                "added restart using F4 key",
+                "changed how game render works"
+            ]
+        },
+        {
+            "version": "beta 1.4",
+            "date": "Aug 14, 20",
+            "changes": [
+                "added changelogs",
+                "removed keybindings that were made for debugging",
+                "fixed key infos"
+            ]
+        }
+    ]
+}

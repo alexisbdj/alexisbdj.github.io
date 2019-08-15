@@ -16,13 +16,22 @@
         <canvas id="window" width="576" height="640">
             <p>if you can see this message, your browser doesn't support canvas</p>
         </canvas>
-        <h2>touches:</h2>
-        <p>gauche: rien du tout</p>
-        <p>droite: rien du tout</p>
-        <p>mais en fait vraiment, il y a des if (key == 'riendutout') dans le code</p>
+        <h2>Keys:</h2>
+        <p>move left: Left arrow</p>
+        <p>move right: Right arrow</p>
+        <p>turn left/counterclockwise: W</p>
+        <p>turn right/clockwise: X</p>
+        <p>softdrop: Down arrow</p>
+        <p>harddrop: space</p>
+        <p>restart: F4</p>
+        <h2>Changelogs</h2>
+        <div id="changelogs"></div>
     </body>
 </html>
 <script src="render.js"></script>
 <script src="update.js"></script>
 <script src="randomizer.js"></script>
+<script src="getLocal.js"></script>
+<script src="elemTemplate.js"></script>
+<script src="changelogs.js"></script>
 <script src="main.js"></script>

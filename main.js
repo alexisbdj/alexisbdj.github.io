@@ -283,13 +283,6 @@ function keysUpdate(key, value) {
         else if (key == 'c') {
             Game.movementsToDo.hold = true;
         }
-        else if (key == 'm') {
-            localStorage.setItem('board', JSON.stringify(Game.board));
-        }
-        else if (key == 'l') {
-            Game.board = JSON.parse(localStorage.getItem('board'));
-            console.log('ok');
-        }
         else if (key == 'F4') {
             restart(Game);
         }
@@ -321,6 +314,8 @@ function restart(Game) {
     Game.next = [];
     Game.hold = undefined;
     getNextTetri(Game);
+    Game.status = statusCodes.playing;
+    Game.movementsToDo.harddrop = false;
 }
 
 function setCurrentToStat(tetri, stat) {
@@ -391,3 +386,5 @@ function mainLoop() {
     render(canvas, context, Game);
     setTimeout(mainLoop, deltaTime);
 }
+
+displayChangeLogs();
